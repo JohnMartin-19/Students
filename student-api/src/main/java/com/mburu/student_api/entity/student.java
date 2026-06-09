@@ -21,7 +21,13 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @private Long id;
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(unique = true, nullable = false, length = 150)
+    private String email;
 
     //(this owns the FK - Many students belong to one department)
     @ManyToOne(fetch = FetchType.LAZY)

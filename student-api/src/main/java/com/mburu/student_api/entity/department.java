@@ -6,7 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-improt java.util.LocalDateTime;
+improt java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +36,11 @@ public class Department{
     private List<Student> student = new ArrayList<>();
 
     @CreatedDate
-    @Column(updateable = false)
+    @Column(updatable = false)
     private LocalDatetime createdAt;
 
     @LastModifiedAt
-    @Column(updateable = true)
+    @Column(updatable = true)
     private LocalDateTime updatedAt;
 
 

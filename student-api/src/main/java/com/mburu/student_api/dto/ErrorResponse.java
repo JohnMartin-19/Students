@@ -1,9 +1,11 @@
 package com.mburu.student_api.dto;
 
 import lombok.*;
-import java.util.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.Map;
 
+@Builder
+@Data
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private int status;

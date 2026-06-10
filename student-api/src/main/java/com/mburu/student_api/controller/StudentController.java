@@ -4,6 +4,7 @@ import com.mburu.student_api.dto.StudentRequest;
 import com.mburu.student_api.dto.StudentResponse;
 import com.mburu.student_api.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

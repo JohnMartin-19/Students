@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @Service
 @RequiredArgsConstructor
 public class StudentService {
-    private static final Logger log = LoggerFactory.getLogger(StudentService.class)
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepository;
 
     //POST request - creating a new students
@@ -41,7 +41,7 @@ public class StudentService {
 
     //get request for student/{id}
     public StudentResponse getById(Long id) {
-        log.debug("Fetching student with id: {}", id)
+        log.debug("Fetching student with id: {}", id);
         return toResponse(findOrThrow(id));
     }
 

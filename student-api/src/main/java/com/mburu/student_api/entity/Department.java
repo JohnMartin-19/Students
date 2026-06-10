@@ -27,6 +27,7 @@ public class Department {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> students = new ArrayList<>();
 

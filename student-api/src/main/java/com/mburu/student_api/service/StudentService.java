@@ -12,16 +12,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
-
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class)
     private final StudentRepository studentRepository;
 
     //POST request - creating a new students
     public StudentResponse create(StudentRequest request) {
+        log.info("Creating a new student with email: {}", request.getEmail());
         if (studentRepository.existsByEmail(request.getEmail())) {
+            log.warn("Error creating student. Email already exists: {}", request.getEmail());
             throw new DuplicateResourceException(
                 "Email already in use: " + request.getEmail());
         }
@@ -31,11 +35,13 @@ public class StudentService {
                 .age(request.getAge())
                 .build();
         Student saved = studentRepository.save(student);
+        log.info("Student created successfully with ID: {}", saved.getId());
         return toResponse(saved);
     }
 
     //get request for student/{id}
     public StudentResponse getById(Long id) {
+        log.debug("Fetching student with id: {}", id)
         return toResponse(findOrThrow(id));
     }
 
@@ -53,10 +59,12 @@ public class StudentService {
 
     //put request - Updating the endpoint
     public StudentResponse update(Long id, StudentRequest request) {
+        log.info("Updating the student with ID: {}", id);
         Student student = findOrThrow(id);
         student.setName(request.getName());
         student.setEmail(request.getEmail());
         student.setAge(request.getAge());
+        log.info("Updated the student with ID: {}", id);
         return toResponse(studentRepository.save(student));
     }
         //delete endpoint

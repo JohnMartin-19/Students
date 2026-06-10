@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${DB_URL}                 # read from environment variables — never hardcode
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate           # never auto-alter in production
+    show-sql: false                # never log SQL in production
+
+logging:
+  level:
+    root: WARN
+    com.mburu.student_api: INFO
+  file:
+    name: /var/log/student-api/app.log

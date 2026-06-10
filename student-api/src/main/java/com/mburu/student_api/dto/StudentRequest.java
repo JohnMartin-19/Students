@@ -20,7 +20,7 @@ public class StudentRequest {
     @Max(value = 35, message = "Maximum age is 35. Youths only.")
     private Integer age;
 
-    @NotNull(message = "Depsrtment ID is required")
+    //@NotNull(message = "Depsrtment ID is required")
     @Positive(message = "Department ID cannot be a negative value")
     private Long departmentId;
 }

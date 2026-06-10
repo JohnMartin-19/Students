@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/student_db
+    username: mburu
+    password: mburu
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    com.mburu.student_api: DEBUG
+    org.hibernate.SQL: DEBUG

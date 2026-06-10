@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb        # in-memory DB, no PostgreSQL needed
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop        # fresh schema every test run
+
+logging:
+  level:
+    root: WARN                     # quiet during tests

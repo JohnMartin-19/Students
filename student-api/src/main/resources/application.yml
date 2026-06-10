@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: student-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/student_db
+    username: mburu
+    password: mburu
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update               # creates/alters tables automatically
+    show-sql: true                   # prints SQL to console
+    properties:
+      hibernate:
+        format_sql: true             # pretty-prints the SQL
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080

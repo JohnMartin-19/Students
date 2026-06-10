@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.support.AuditingEntityListener;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Builder
 public class Student {
 
@@ -26,24 +25,20 @@ public class Student {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(unique = true, nullable = false, length = 150)
+    @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    //(this owns the FK - Many students belong to one department)
+    @Column(nullable = false)
+    private Integer age;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
-
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedAt
-    @Column(updatable = true)
+    @LastModifiedDate
     private LocalDateTime updatedAt;
-
-
 }
-
-

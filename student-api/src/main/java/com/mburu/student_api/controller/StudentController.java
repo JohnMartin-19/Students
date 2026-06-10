@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/students")
+@RequestMapping("/api/v1/students")
 @RequiredArgsConstructor
 public class StudentController {
 

@@ -1,95 +1,87 @@
 package com.mburu.student_api.service;
 
-import com.mburu.student_api.dto.*;
-import com.mburu.student_api.entity.*;
-import com.mburu.student_api.repository.*;
+import com.mburu.student_api.dto.StudentRequest;
+import com.mburu.student_api.dto.StudentResponse;
+import com.mburu.student_api.entity.Student;
+import com.mburu.student_api.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 @Service
-@RequiredArgsConstructor  // --->lombok constructor injection for all final fields
+@RequiredArgsConstructor
 public class StudentService {
-    private final StudentRepository studentRepository;
-    //  --create a student
 
-    public StudentResponse create(StudentRequest){
-        if(studentRepository.existsByEmail(request.getEmail())){
-            throw new IllegatlArgumentException("Email already exists" + request.getEmail());
+    private final StudentRepository studentRepository;
+
+    //POST request - creating a new students
+    public StudentResponse create(StudentRequest request) {
+        if (studentRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException(
+                "Email already in use: " + request.getEmail());
         }
         Student student = Student.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .age(request.getAge())
                 .build();
-
         Student saved = studentRepository.save(student);
         return toResponse(saved);
     }
-}
 
-// read one student
+    //get request for student/{id}
+    public StudentResponse getById(Long id) {
+        return toResponse(findOrThrow(id));
+    }
 
-public StudentResponse getById(Long id){
-    Student student = findOrThrow(id);
-    return toResponse(student);
-}
+    //used to handle get Request for all students
+    public Page<StudentResponse> getAll(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
+        return studentRepository.findAll(pageable).map(this::toResponse);
+    }
 
-//read all students - pagination enforced
-public <StudentResponse> getAll(int page, int size, String sortBy){
-    Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,sortBy));
-    return  studentRepository.findAll(pageable).map(this::toResponse);
-}
+    //paginated get request - searching
+    public Page<StudentResponse> search(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
+        return studentRepository.search(keyword, pageable).map(this::toResponse);
+    }
 
-//search
-public Page<StudentResponse> search(String keyword, int page, int size){
-    Pageable pageable = PageRequest.of(page,size.Sort.by("name"));
-    return studentRepository.search(keyword, pageable).map(this::toResponse);
-}
+    //put request - Updating the endpoint
+    public StudentResponse update(Long id, StudentRequest request) {
+        Student student = findOrThrow(id);
+        student.setName(request.getName());
+        student.setEmail(request.getEmail());
+        student.setAge(request.getAge());
+        return toResponse(studentRepository.save(student));
+    }
+        //delete endpoint
+    public void delete(Long id) {
+        findOrThrow(id);
+        studentRepository.deleteById(id);
+    }
+    //helprs
+    private Student findOrThrow(Long id) {
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Student not found with id: " + id));
+    }
 
-//updated the student
-
-public StudentResponse update(Long id, StudentRequest request) {
-    Student student = findOrThrow(id);
-
-    student.setName(request.getName());
-    student.setEmail(request.getEmail());
-    student.setAge(request.getAge());
-
-    Student updatedStudent = studentRepository.save(student);
-    return toResponse(updatedStudent);
-
-}
-
-//delete a student
-
-public void delete(Long id){
-    findOrThrow(id);
-    studentRepository.deleteById(id);
-}
-
-
-//helprs
-private Student findOrThrow(Long id) {
-    return studentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(
-                    "Student not found with id: " + id));
-}
-
-// Maps Entity → ResponseDTO  (never expose the entity directly)
-private StudentResponse toResponse(Student student) {
-    return StudentResponse.builder()
-            .id(student.getId())
-            .name(student.getName())
-            .email(student.getEmail())
-            .age(student.getAge())
-            .departmentName(
+    private StudentResponse toResponse(Student student) {
+        return StudentResponse.builder()
+                .id(student.getId())
+                .name(student.getName())
+                .email(student.getEmail())
+                .age(student.getAge())
+                .departmentName(
                     student.getDepartment() != null
-                            ? student.getDepartment().getName()
-                            : null)
-            .createdAt(student.getCreatedAt())
-            .updatedAt(student.getUpdatedAt())
-            .build();
+                        ? student.getDepartment().getName()
+                        : null)
+                .createdAt(student.getCreatedAt())
+                .updatedAt(student.getUpdatedAt())
+                .build();
+    }
 }

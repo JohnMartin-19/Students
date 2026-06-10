@@ -2,7 +2,7 @@ package com.mburu.student_api.dto;
 
 import lombok.Data;
 
-@Data         //Lombok ---> this generates getters, setters, equas, hashCode ,toString
+@Data
 public class StudentRequest {
     private String name;
     private String email;

@@ -17,12 +17,12 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<StudentResponse> create(@RequestBody StudentRequest request) {
+    public ResponseEntity<StudentResponse> create(@Valid @RequestBody StudentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<StudentResponse> getById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(studentService.getById(id));
     }
 
@@ -45,7 +45,7 @@ public class StudentController {
     @PutMapping("/{id}")
     public ResponseEntity<StudentResponse> update(
             @PathVariable Long id,
-            @RequestBody StudentRequest request) {
+            @Valid @RequestBody StudentRequest request) {
         return ResponseEntity.ok(studentService.update(id, request));
     }
 

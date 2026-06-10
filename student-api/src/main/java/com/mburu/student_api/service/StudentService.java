@@ -4,6 +4,7 @@ import com.mburu.student_api.dto.StudentRequest;
 import com.mburu.student_api.dto.StudentResponse;
 import com.mburu.student_api.entity.Student;
 import com.mburu.student_api.repository.StudentRepository;
+import com.mburu.student_api.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ public class StudentService {
     //POST request - creating a new students
     public StudentResponse create(StudentRequest request) {
         if (studentRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException(
+            throw new DuplicateResourceException(
                 "Email already in use: " + request.getEmail());
         }
         Student student = Student.builder()
@@ -66,7 +67,7 @@ public class StudentService {
     //helprs
     private Student findOrThrow(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Student not found with id: " + id));
     }
 

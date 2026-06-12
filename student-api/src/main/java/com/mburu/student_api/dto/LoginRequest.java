@@ -6,10 +6,6 @@ import lombok.Data;
 @Data
 public class LoginRequest {
 
-    @NotNull(message = "Username is required")
-    @Size(min = 2, max = 100, message = "Username must be provided")
-    private String username;
-
     @NotNull(message = "Email is required")
     @Email(message = "You must provide a valid email address")
     private String email;

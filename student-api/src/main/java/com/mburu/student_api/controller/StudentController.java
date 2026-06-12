@@ -29,8 +29,10 @@ public class StudentController {
 
     @GetMapping
     public ResponseEntity<Page<StudentResponse>> getAll(
-            @RequestParam(defaultValue = "0")    int page,
-            @RequestParam(defaultValue = "10")   int size,
+            @RequestParam(defaultValue = "0")
+            int page,
+            @RequestParam(defaultValue = "10")
+            int size,
             @RequestParam(defaultValue = "name") String sortBy) {
         return ResponseEntity.ok(studentService.getAll(page, size, sortBy));
     }

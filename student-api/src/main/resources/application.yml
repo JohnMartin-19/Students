@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-circular-references: true
   application:
     name: student-api
 
@@ -10,12 +12,20 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update               # creates/alters tables automatically
-    show-sql: true                   # prints SQL to console
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true             # pretty-prints the SQL
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B59
+    expiration: 86400000
 
 server:
   port: 8080
+logging:
+  level:
+    org.springframework.web: DEBUG

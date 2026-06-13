@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +19,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ── Validation failures (@Valid) ─────────────────────────────────────────
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex,
@@ -39,7 +39,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // ── Resource not found ────────────────────────────────────────────────────
     @ExceptionHandler({ResourceNotFoundException.class, EntityNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNotFound(
             RuntimeException ex,
@@ -54,7 +53,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // ── No route found (404) — must return 404 not 500 ───────────────────────
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoRouteFound(
             NoResourceFoundException ex,
@@ -69,7 +67,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // ── Duplicate resource ────────────────────────────────────────────────────
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handleDuplicate(
             DuplicateResourceException ex,
@@ -84,11 +81,27 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // ── Catch-all ─────────────────────────────────────────────────────────────
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(
+            BadCredentialsException ex,
+            HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .errorCode("INVALID_CREDENTIALS")
+                .message("Email or password is incorrect")
+                .path(request.getRequestURI())
+                .build());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAll(
             Exception ex,
             HttpServletRequest request) {
+
+        // TEMP: print the real cause to console so we can see it
+        ex.printStackTrace();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())

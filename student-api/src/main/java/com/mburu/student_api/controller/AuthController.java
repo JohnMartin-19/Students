@@ -1,0 +1,76 @@
+package com.mburu.student_api.controller;
+
+import com.mburu.student_api.dto.AuthResponse;
+import com.mburu.student_api.dto.LoginRequest;
+import com.mburu.student_api.dto.RegisterRequest;
+import com.mburu.student_api.entity.Role;
+import com.mburu.student_api.entity.User;
+import com.mburu.student_api.exception.DuplicateResourceException;
+import com.mburu.student_api.repository.UserRepository;
+import com.mburu.student_api.security.JwtService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    // post req /api/auth/register
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("Email already registered: " + request.getEmail());
+        }
+
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))  // hash before saving
+                .role(Role.USER)   // default role — promote to ADMIN manually in DB if needed
+                .build();
+
+        userRepository.save(user);
+
+        String token = jwtService.generateToken(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(AuthResponse.builder()
+                .token(token)
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build());
+    }
+
+    // post req /api/auth/login
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+
+        // throws BadCredentialsException if email/password don't match — caught by GlobalExceptionHandler
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow();   // can't happen — authenticationManager already validated
+
+        String token = jwtService.generateToken(user);
+
+        return ResponseEntity.ok(AuthResponse.builder()
+                .token(token)
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build());
+    }
+}

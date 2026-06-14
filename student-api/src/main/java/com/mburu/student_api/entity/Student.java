@@ -9,7 +9,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "students")
+@Table( name = "students",
+        indexes = {
+                @Index(name = "idx_student_email", columnList = "email"),
+                @Index(name = "idx_student_department_id", columnList = "department_id"),
+                @Index(name = "idx_student_name_age", columnList = "name, age")
+
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter

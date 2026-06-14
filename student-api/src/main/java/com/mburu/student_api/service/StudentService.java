@@ -22,6 +22,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
 
     //POST request - creating a new students
+    @Transactional  // --> For Atomicity . either it happens wholely, or it rollsback
     public StudentResponse create(StudentRequest request) {
         log.info("Creating a new student with email: {}", request.getEmail());
         if (studentRepository.existsByEmail(request.getEmail())) {

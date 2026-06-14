@@ -25,17 +25,17 @@ public class DepartmentService {
     public DepartmentResponse create(DepartmentRequest request) {
 
         //check if the department exists
-        if(departmentRepository.existsByName(request.getName())) {
-            log.warn("Error creating the department: {}" , request.getName());
-            throw new DuplicateResourceException("Department already exists", request.getName());
-
+        if (departmentRepository.existsByName(request.getName())) {
+            log.warn("Error creating department. Already exists: {}", request.getName());
+            throw new DuplicateResourceException("Department already exists: " + request.getName());
         }
+
         Department department = Department.builder()
                 .name(request.getName())
                 .build();
         Department saved = departmentRepository.save(department);
         log.info("Department created successfully with ID: {}", saved.getId());
-        return toResponse(saved)
+        return toResponse(saved);
     }
 
     //get request - get department by ID

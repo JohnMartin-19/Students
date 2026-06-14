@@ -1,4 +1,4 @@
-packaage com.mburu.student_api.service;
+package com.mburu.student_api.service;
 
 import com.mburu.student_api.dto.DepartmentRequest;
 import com.mburu.student_api.dto.DepartmentResponse;
@@ -27,7 +27,7 @@ public class DepartmentService {
         //check if the department exists
         if(departmentRepository.existsByName(request.getName())) {
             log.warn("Error creating the department: {}" , request.getName());
-            throw new DuplicateResourceException("Department already exists: {}", request.getName());
+            throw new DuplicateResourceException("Department already exists", request.getName());
 
         }
         Department department = Department.builder()
@@ -35,6 +35,7 @@ public class DepartmentService {
                 .build();
         Department saved = departmentRepository.save(department);
         log.info("Department created successfully with ID: {}", saved.getId());
+        return toResponse(saved)
     }
 
     //get request - get department by ID
@@ -59,8 +60,8 @@ public class DepartmentService {
     //put request - to updated the department resource
     public DepartmentResponse update(Long id, DepartmentRequest request) {
         Department department = findOrThrow(id);
-        department.setName(request.getName);
-        return toResponse(departmentRepository.save(department))
+        department.setName(request.getName());
+        return toResponse(departmentRepository.save(department));
     }
 
     //delete endpoint
@@ -81,10 +82,10 @@ public class DepartmentService {
         return DepartmentResponse.builder()
                 .id(department.getId())
                 .name(department.getName())
-                .studentName(
-                        department.getStudent() != null
-                                ? department.getStudent().getName()
-                                : null)
+                .studentCount(
+                        department.getStudents() != null
+                                ? department.getStudents().size()
+                                : 0)
                 .createdAt(department.getCreatedAt())
                 .updatedAt(department.getUpdatedAt())
                 .build();

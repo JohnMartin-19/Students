@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "departments")
+@Table(name = "departments",
+        indexes = {
+        @Index(name = idx_department_name,columnList = "email")
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter

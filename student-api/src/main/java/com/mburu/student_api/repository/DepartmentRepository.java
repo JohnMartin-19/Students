@@ -14,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
+    //we use the @EntityGrapgh annotation to solve the N+1 query issue
+    //I prefer this over the JPQL strategy.
     @EntityGraph(attributePaths = {"students"})
     @Override
     List<Department> findAll();

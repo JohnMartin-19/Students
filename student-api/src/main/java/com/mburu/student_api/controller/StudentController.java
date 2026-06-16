@@ -50,7 +50,8 @@ public class StudentController {
             int page,
             @RequestParam(defaultValue = "10")
             int size,
-            @RequestParam(defaultValue = "name") String sortBy) {
+            @RequestParam(defaultValue = "name")
+            String sortBy) {
         return ResponseEntity.ok(studentService.getAll(page, size, sortBy));
     }
 

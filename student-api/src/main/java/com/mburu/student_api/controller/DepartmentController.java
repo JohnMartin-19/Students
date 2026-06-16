@@ -16,11 +16,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @RestController
-@RquestMapping("/api/students")
+@RequestMapping("/api/departments")
+@RequiredArgsConstructor
 @Tag(name = "Departments", description = "Dept management endpoints")
 
 public class DepartmentController {
 
+    //constructor injection
     private final DepartmentService departmentService;
 
     @Operation(summary = "Create a new department", description = "Requires ADMIN role")
@@ -31,7 +33,7 @@ public class DepartmentController {
     })
     @PostMapping
     public ResponseEntity<DepartmentResponse> create (@Valid @RequestBody DepartmentRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(departmentService(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(departmentService.create(request));
     }
 
     @Operation(summary = "Get a department with its ID", description = "Requires USER or ADMIN role")
@@ -39,9 +41,9 @@ public class DepartmentController {
             @ApiResponse(responseCode = "200", description = "Department retrieved"),
             @ApiResponse(responseCode = "404", description = "Department does not exists")
     })
-    @GetMapping("{/id}")
-    public ResponseEntity<DepartmentResponse> getById(@PathVariable @Valid Long id) {
-        return ResponseEntity.ok(getById(id));
+    @GetMapping("/{id}")
+    public ResponseEntity<DepartmentResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(departmentService.getById(id));
     }
 
     @Operation(summary = "Retrieve all departments", description = "Paginated, Requires USER or ADMIN role")
@@ -69,7 +71,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "400", description = "Validation failed"),
             @ApiResponse(responseCode = "404", description = "Department does not exist")
     })
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public ResponseEntity<DepartmentResponse> update(@PathVariable Long id, @Valid @RequestBody DepartmentRequest request) {
         return ResponseEntity.ok(departmentService.update(id, request));
     }
@@ -80,7 +82,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "204", description = "No content. Department deleted"),
             @ApiResponse(responseCode = "404", description = "Department does not exist")
     })
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity <Void> delete( @PathVariable Long id) {
         departmentService.delete(id);
         return ResponseEntity.noContent().build();

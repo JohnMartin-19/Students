@@ -71,6 +71,10 @@ public class SecurityConfig {
                             "/v3/api-docs.yaml"
                     ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/api/departments/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/api/departments/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/departments/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/departments/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/students/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/students/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/students/**").hasRole("ADMIN")

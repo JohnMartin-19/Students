@@ -8,6 +8,10 @@ import com.mburu.student_api.entity.User;
 import com.mburu.student_api.exception.DuplicateResourceException;
 import com.mburu.student_api.repository.UserRepository;
 import com.mburu.student_api.security.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,15 +20,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "Authentication", description = "Register and login endpoints")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Register and login endpoints")
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -32,7 +32,6 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    // post req /api/auth/register
     @Operation(summary = "Register a new user", description = "Creates a user account with default role USER")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
@@ -49,12 +48,11 @@ public class AuthController {
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))  // hash before saving
-                .role(Role.USER)   // default role — promote to ADMIN manually in DB if needed
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
-
         String token = jwtService.generateToken(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthResponse.builder()
@@ -64,7 +62,6 @@ public class AuthController {
                 .build());
     }
 
-    // post req /api/auth/login
     @Operation(summary = "Login", description = "Authenticates a user and returns a JWT token")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Login successful"),
@@ -73,14 +70,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
 
-        // throws BadCredentialsException if email/password don't match — caught by GlobalExceptionHandler
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();   // can't happen — authenticationManager already validated
-
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(user);
 
         return ResponseEntity.ok(AuthResponse.builder()

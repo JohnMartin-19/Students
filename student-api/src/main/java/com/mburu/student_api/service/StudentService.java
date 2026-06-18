@@ -5,6 +5,7 @@ import com.mburu.student_api.dto.StudentResponse;
 import com.mburu.student_api.entity.Student;
 import com.mburu.student_api.repository.StudentRepository;
 import com.mburu.student_api.exception.*;
+import com.mburu.student_api.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentService {
     private static final Logger log = LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepository;
-
+    private final NotificationService notificationService;
     //POST request - creating a new students
     @Transactional  // --> For Atomicity . either it happens wholely, or it rollsback
     public StudentResponse create(StudentRequest request) {
@@ -38,6 +39,7 @@ public class StudentService {
                 .build();
         Student saved = studentRepository.save(student);
         log.info("Student created successfully with ID: {}", saved.getId());
+        notificationService.sendWelcomeEmail(saved.getEmail(), saved.getName());
         return toResponse(saved);
     }
 
@@ -48,6 +50,7 @@ public class StudentService {
     }
 
     //used to handle get Request for all students
+    @Transactional(readOnly = true)
     public Page<StudentResponse> getAll(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
         return studentRepository.findAll(pageable).map(this::toResponse);
